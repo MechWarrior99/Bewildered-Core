@@ -1,6 +1,6 @@
 {
   "name": "com.bewildered.core",
-  "version": "0.0.0",
+  "version": "1.2.0",
   "displayName": "Bewildered Core",
   "description": "Core systems, tools, and utilities used across projects and packages.",
   "unity": "2019.3",
@@ -10,7 +10,7 @@
 	"utilities"
   ],
   "author": {
-    "name": "MechWarrior99",
+    "name": "Bewildered",
     "email": "contact@bewilderedstudios.com",
     "url": "https://www.bewilderedstudios.com"
   }
