@@ -172,7 +172,10 @@ namespace Bewildered.Core.Editor
 
             rect.height = EditorGUI.GetPropertyHeight(elementProperty, GUIContent.none, true);
             rect.y += 1;
+
+            EditorGUI.BeginProperty(rect, propertyContent, elementProperty);
             EditorGUI.PropertyField(rect, elementProperty, propertyContent, true);
+            EditorGUI.EndProperty();
         }
 
         public float GetHeight()
