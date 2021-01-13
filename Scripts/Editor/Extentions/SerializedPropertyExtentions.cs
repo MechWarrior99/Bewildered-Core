@@ -53,6 +53,48 @@ namespace Bewildered.Core.Editor
             return true;
         }
 
+        /// <summary>
+        /// Doesn't work when in a nested type. It will return the parent type instead.
+        /// </summary>
+        /// <param name="property"></param>
+        /// <returns></returns>
+        public static System.Type GetPropertyType(this SerializedProperty property)
+        {
+            object obj = property.serializedObject.targetObject;
+            string path = property.propertyPath.Replace(".Array.data", "");
+            string[] fieldStructure = path.Split('.');
+            Regex rgx = new Regex(@"\[\d+\]");
+
+            for (int i = 0; i < fieldStructure.Length; i++)
+            {
+                if (fieldStructure[i].Contains("["))
+                {
+                    int index = System.Convert.ToInt32(new string(fieldStructure[i].Where(c => char.IsDigit(c)).ToArray()));
+                    FieldInfo field = obj.GetType().GetField(rgx.Replace(fieldStructure[i], ""), BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public);
+                    object collection = field.GetValue(obj);
+
+                    if (collection.GetType().IsArray)
+                    {
+                        return ((object[])collection)[index].GetType();
+                    }
+                    else if (collection is IEnumerable)
+                    {
+                        object item = ((IList)collection)[index];
+                        if (item == null)
+                            return collection.GetType().GetGenericArguments().FirstOrDefault();
+                        else
+                            return item.GetType();
+                    }
+                }
+                else
+                {
+                    return obj.GetType().GetField(property.propertyPath, BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public).FieldType;
+                }
+            }
+
+            return default;
+        }
+
 
         public static T GetValue<T>(this SerializedProperty property) where T : class
         {

@@ -16,7 +16,6 @@ namespace Bewildered.Core.Editor
         private const float minHeaderHeight = 2.0f;
 
         public ReorderableList _reorderableList;
-        private GUIContent _headerContent;
         private SerializedProperty _arraySizeProperty;
         private bool _displayElementsName = true;
         private bool _isCollapsible = true;
@@ -59,6 +58,12 @@ namespace Bewildered.Core.Editor
         {
             get { return _isCollapsible; }
             set { _isCollapsible = value; }
+        }
+
+        public GUIContent HeaderContent
+        { 
+            get;
+            set;
         }
 
         public Action<Rect, ReorderablePropertyList> OnAddDropdown
@@ -122,7 +127,7 @@ namespace Bewildered.Core.Editor
             _isCollapsible = collapsible;
             _displayHeader = displayHeader;
             _displayElementsName = displayElementsName;
-            _headerContent = new GUIContent(headerDisplayName);
+            HeaderContent = new GUIContent(headerDisplayName);
 
             _arraySizeProperty = property.FindPropertyRelative("Array.size");
             _reorderableList = new ReorderableList(property.serializedObject, property, reorderable, !collapsible && displayHeader, true, true);
@@ -135,7 +140,7 @@ namespace Bewildered.Core.Editor
             _reorderableList.onRemoveCallback += OnRemoveHandler;
 
             if (!_isCollapsible && _displayHeader)
-                _reorderableList.drawHeaderCallback = (rect) => EditorGUI.LabelField(rect, _headerContent);
+                _reorderableList.drawHeaderCallback = (rect) => EditorGUI.LabelField(rect, HeaderContent);
 
             if (!_isCollapsible || !displayHeader)
                 property.isExpanded = true;
@@ -205,7 +210,7 @@ namespace Bewildered.Core.Editor
                     Event.current.type = EventType.Used;
 
                 EditorGUI.BeginChangeCheck();
-                Property.isExpanded = EditorGUI.BeginFoldoutHeaderGroup(headerRect, Property.isExpanded, _headerContent);
+                Property.isExpanded = EditorGUI.BeginFoldoutHeaderGroup(headerRect, Property.isExpanded, HeaderContent, Styles.HeaderStyle);
                 EditorGUI.EndFoldoutHeaderGroup();
                 if (EditorGUI.EndChangeCheck())
                     Property.serializedObject.ApplyModifiedPropertiesWithoutUndo();
@@ -243,6 +248,17 @@ namespace Bewildered.Core.Editor
         private void HandleDrawElementGUI(Rect rect, int index, bool isActive, bool isFocused)
         {
             _drawElementGUI?.Invoke(rect, Property.GetArrayElementAtIndex(index));
+        }
+
+        static class Styles
+        {
+            public static GUIStyle HeaderStyle { get; }
+
+            static Styles()
+            {
+                HeaderStyle = new GUIStyle(EditorStyles.foldout);
+                HeaderStyle.fontStyle = FontStyle.Bold;
+            }
         }
     }
 }

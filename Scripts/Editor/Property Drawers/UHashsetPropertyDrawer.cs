@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Collections.Generic;
+using System.Reflection;
 using UnityEngine;
 using UnityEditor;
 
@@ -7,50 +8,59 @@ namespace Bewildered.Core.Editor
     [CustomPropertyDrawer(typeof(UHashset<>), true)]
     internal class UHashsetPropertyDrawer : PropertyDrawer
     {
-        private ReorderablePropertyList _list;
+        private class DrawerData
+        {
+            public ReorderablePropertyList propertyList;
+            public object targetInstanceValue;
+            public bool isSerializingToHashset = true;
+        }
+
         private FieldInfo _doSerializeToHashsetField;
-        private object _targetInstanceValue;
-        private bool _isSerializingToHashsete = true;
+        // Only a single PropertyDrawer instance is created for elements in an array and is then given the data for each element. 
+        // So if there was a list of UHashsets, they would all share the same ReorderableList if they were not put in a collection like this.
+        private Dictionary<string, DrawerData> _propertyPathsDrawerData = new Dictionary<string, DrawerData>();
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-            EditorGUI.BeginChangeCheck();
-            _list.Draw(position);
-            if (EditorGUI.EndChangeCheck() && _isSerializingToHashsete)
+            if (!_propertyPathsDrawerData.TryGetValue(property.propertyPath, out DrawerData drawerData))
             {
-                _doSerializeToHashsetField.SetValue(_targetInstanceValue, false);
-                _isSerializingToHashsete = false;
+                drawerData = InitializeDrawerData(property, label);
+            }
+            
+            drawerData.propertyList.HeaderContent = label;
+
+            EditorGUI.BeginChangeCheck();
+            drawerData.propertyList.Draw(position);
+            if (EditorGUI.EndChangeCheck() && drawerData.isSerializingToHashset)
+            {
+                drawerData.isSerializingToHashset = false;
+                _doSerializeToHashsetField.SetValue(drawerData.targetInstanceValue, false);
             }
         }
 
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
-            if (_list == null)
+            if (_doSerializeToHashsetField == null)
+                _doSerializeToHashsetField = property.GetPropertyType().BaseType.GetField("_doSerializeToHashset", BindingFlags.NonPublic | BindingFlags.Instance);
+
+            if (!_propertyPathsDrawerData.TryGetValue(property.propertyPath, out DrawerData drawerData))
             {
-                Init(property, label);
+                drawerData = InitializeDrawerData(property, label);
             }
-            
-            return _list.GetHeight();
+
+            return drawerData.propertyList.GetHeight();
         }
 
-        private void Init(SerializedProperty property, GUIContent label)
+        private DrawerData InitializeDrawerData(SerializedProperty property, GUIContent label)
         {
-            _targetInstanceValue = property.GetValue();
-            _doSerializeToHashsetField = fieldInfo.FieldType.BaseType.GetField("_doSerializeToHashset", BindingFlags.NonPublic | BindingFlags.Instance);
-            
-            _list = new ReorderablePropertyList(property.FindPropertyRelative("_hashsetList"), label.text, true, true, true, true);
-            _list.OnAdd += (list) => {
-                list.Property.AddAndGetArrayElement().ResetValueToDefault();
-                list.Property.serializedObject.ApplyModifiedProperties();
-            };
-            _list.DrawElementGUI = (rect, elementProperty) =>
+            ReorderablePropertyList propertyList = new ReorderablePropertyList(property.FindPropertyRelative("_hashsetList"), label.text, true, true, true, true);
+            DrawerData drawerData = new DrawerData()
             {
-                rect.height = EditorGUI.GetPropertyHeight(elementProperty, GUIContent.none, true);
-                rect.y += 1;
-                EditorGUI.BeginProperty(rect, GUIContent.none, elementProperty);
-                EditorGUI.PropertyField(rect, elementProperty);
-                EditorGUI.EndProperty();
+                propertyList = propertyList,
+                targetInstanceValue = property.GetValue()
             };
+            _propertyPathsDrawerData[property.propertyPath] = drawerData;
+            return drawerData;
         }
     } 
 }
