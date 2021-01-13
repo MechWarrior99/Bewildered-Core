@@ -41,8 +41,18 @@ namespace Bewildered.Core.Editor
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
             if (_doSerializeToHashsetField == null)
-                _doSerializeToHashsetField = property.GetPropertyType().BaseType.GetField("_doSerializeToHashset", BindingFlags.NonPublic | BindingFlags.Instance);
-
+            {
+                System.Type hashsetBaseType = property.GetPropertyType();
+                if (hashsetBaseType == fieldInfo.FieldType)
+                    hashsetBaseType = hashsetBaseType.BaseType;
+                else if (hashsetBaseType == fieldInfo.DeclaringType)
+                    hashsetBaseType = fieldInfo.FieldType.BaseType;
+                else
+                    hashsetBaseType = hashsetBaseType.BaseType;
+                
+                _doSerializeToHashsetField = hashsetBaseType.GetField("_doSerializeToHashset", BindingFlags.NonPublic | BindingFlags.Instance);
+            }
+            
             if (!_propertyPathsDrawerData.TryGetValue(property.propertyPath, out DrawerData drawerData))
             {
                 drawerData = InitializeDrawerData(property, label);
