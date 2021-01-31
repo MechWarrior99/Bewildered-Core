@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Bewildered.Core
+namespace Bewildered
 {
     /// <summary>
     /// Represents a set of values.

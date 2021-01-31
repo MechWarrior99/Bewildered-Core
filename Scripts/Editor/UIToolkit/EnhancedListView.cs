@@ -1,6 +1,6 @@
 ﻿using UnityEngine.UIElements;
 
-namespace Bewildered.Core.Editor
+namespace Bewildered.Editor
 {
     /// <inheritdoc/>
     /// <remarks>Adds some additional Funcinality that is hidden by default in the base <see cref="ListView"/>.</remarks>

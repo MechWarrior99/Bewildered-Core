@@ -4,7 +4,7 @@ using System.IO;
 using UnityEngine;
 using UnityEditor;
 
-namespace Bewildered.Core.Editor
+namespace Bewildered.Editor
 {
     public static class AssetDatabaseUtility
     {

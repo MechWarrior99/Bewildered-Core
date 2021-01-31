@@ -1,8 +1,6 @@
 {
-    "name": "Bewildered.Core.Editor",
-    "references": [
-        "GUID:dada115f4e1e58d49beaafba1a01f1ba"
-    ],
+    "name": "Bewildered",
+    "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

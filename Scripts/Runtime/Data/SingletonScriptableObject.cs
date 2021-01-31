@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Bewildered.Core
+namespace Bewildered
 {
     /// <summary>
     /// A class you can derive from if you want to create singleton objects that don't need to be attached to game objects. Singleton asset must be in Resources folder.

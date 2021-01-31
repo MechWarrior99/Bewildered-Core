@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Bewildered.Core.Editor
+namespace Bewildered.Editor
 {
     public static class VisualElementUtility
     {

@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEditor;
 
-namespace Bewildered.Core.Editor
+namespace Bewildered.Editor
 {
     [CustomPropertyDrawer(typeof(ReadOnlyAttribute))]
     internal class ReadOnlyDrawer : DecoratorDrawer

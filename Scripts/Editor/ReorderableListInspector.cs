@@ -1,9 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
-namespace Bewildered.Core.Editor
+namespace Bewildered.Editor
 {
     [CustomEditor(typeof(Component), true)]
     [CanEditMultipleObjects]
@@ -36,10 +35,11 @@ namespace Bewildered.Core.Editor
             if (isdefaultScriptProperty)
                 GUI.enabled = false;
 
-            if (property.isArray && property.propertyType != SerializedPropertyType.String)
-                GetReorderableList(property).DrawLayout();
-            else
-                EditorGUILayout.PropertyField(property, property.isExpanded);
+            //if (property.isArray && property.propertyType != SerializedPropertyType.String)
+            //    GetReorderableList(property).DrawLayout();
+            //else
+            //    EditorGUILayout.PropertyField(property, property.isExpanded);
+            ExtraEditorGUI.PropertyField(property);
 
             if (isdefaultScriptProperty)
                 GUI.enabled = cachedGUIEnabled;

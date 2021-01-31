@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Bewildered.Core
+namespace Bewildered
 {
     /// <summary>
     /// Makes a variable not be editable in the inspector.

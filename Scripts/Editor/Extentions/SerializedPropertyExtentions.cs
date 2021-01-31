@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
@@ -8,10 +9,12 @@ using UnityEditor;
 
 using Object = UnityEngine.Object;
 
-namespace Bewildered.Core.Editor
+namespace Bewildered.Editor
 {
     public static class SerializedPropertyExtentions
     {
+        private static Dictionary<SerializedPropertyType, PropertyInfo> _serializedPropertyValueAccessors = new Dictionary<SerializedPropertyType, PropertyInfo>();
+
         /// <summary>
         /// Set the element at the specified index to null if it is a <see cref="Object"/> type field and delete the element in the array.
         /// </summary>
@@ -37,6 +40,11 @@ namespace Bewildered.Core.Editor
             return serializedProperty.GetArrayElementAtIndex(serializedProperty.arraySize - 1);
         }
 
+        public static SerializedProperty GetLastArrayElement(this SerializedProperty property)
+        {
+            return property.GetArrayElementAtIndex(property.arraySize - 1);
+        }
+
         /// <summary>
         /// Determines whether the <see cref="SerializedProperty"/> array contains elements that match the conditions defined by the specified <see cref="Predicate{T}"/>.
         /// </summary>
@@ -46,11 +54,21 @@ namespace Bewildered.Core.Editor
         {
             for (int i = 0; i < serializedProperty.arraySize; i++)
             {
-                if (!match(serializedProperty.GetArrayElementAtIndex(i)))
-                    return false;
+                if (match(serializedProperty.GetArrayElementAtIndex(i)))
+                    return true;
             }
 
-            return true;
+            return false;
+        }
+
+        public static bool ArrayContainsElementValue(this SerializedProperty property, SerializedProperty element)
+        {
+            for (int i = 0; i < property.arraySize; i++)
+            {
+                if (SerializedProperty.DataEquals(property.GetArrayElementAtIndex(i), element))
+                    return true;
+            }
+            return false;
         }
 
         /// <summary>

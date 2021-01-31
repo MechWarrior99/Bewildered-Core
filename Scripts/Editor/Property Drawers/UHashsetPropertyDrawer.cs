@@ -3,7 +3,7 @@ using System.Reflection;
 using UnityEngine;
 using UnityEditor;
 
-namespace Bewildered.Core.Editor
+namespace Bewildered.Editor
 {
     [CustomPropertyDrawer(typeof(UHashset<>), true)]
     internal class UHashsetPropertyDrawer : PropertyDrawer

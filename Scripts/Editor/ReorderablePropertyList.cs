@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEditor;
 using UnityEditorInternal;
 
-namespace Bewildered.Core.Editor
+namespace Bewildered.Editor
 {
     /// <summary>
     /// A reorderable list for a collection <see cref="SerializedProperty"/>. Acts as a wrapper around <see cref="ReorderableList"/>.
@@ -72,7 +72,7 @@ namespace Bewildered.Core.Editor
             set 
             {
                 _onAddDropdownItem = value;
-                if (_onAddItem.GetInvocationList().Length > 0)
+                if (_onAddDropdownItem?.GetInvocationList().Length > 0)
                 {
                     _reorderableList.onAddDropdownCallback -= HandleOnAddDropdownItem;
                     _reorderableList.onAddDropdownCallback += HandleOnAddDropdownItem;
@@ -90,7 +90,7 @@ namespace Bewildered.Core.Editor
             set 
             {
                 _onAddItem = value;
-                if (_onAddItem.GetInvocationList().Length > 0)
+                if (_onAddItem?.GetInvocationList().Length > 0)
                 {
                     _reorderableList.onAddCallback -= HandleOnAddItem;
                     _reorderableList.onAddCallback += HandleOnAddItem;

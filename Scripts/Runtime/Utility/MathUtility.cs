@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Bewildered.Core
+namespace Bewildered
 {
     public enum Rounding { ToEven, AwayFromZero }
 
