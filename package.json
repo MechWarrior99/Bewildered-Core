@@ -1,6 +1,6 @@
 {
   "name": "com.bewildered.core",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "displayName": "Bewildered Core",
   "description": "Core systems, tools, and utilities used across projects and packages.",
   "unity": "2019.3",
