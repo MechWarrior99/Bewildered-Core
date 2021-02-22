@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.UIElements;
 using UnityEditor;
 
@@ -32,8 +33,26 @@ namespace Bewildered.Editor
 
         public virtual void Show(Rect activeRect)
         {
-            EditorWindow = ScriptableObject.CreateInstance<AdvancedPopupWindowContainer>();
-            EditorWindow.rootVisualElement.Add(CreateContentElement());
+            CreateNewPopupWindow();
+            ApplyStyleToWindow();
+            EditorWindow.ShowAsDropDown(GUIUtility.GUIToScreenRect(activeRect), GetWindowSize());
+        }
+
+        public void ShowDebugable(Rect activeRect)
+        {
+            CreateNewPopupWindow();
+            EditorWindow.Show();
+        }
+
+        public virtual Vector2 GetWindowSize()
+        {
+            return new Vector2(200.0f, 200.0f);
+        }
+
+        protected void ApplyStyleToWindow()
+        {
+            if (EditorWindow == null)
+                return;
             EditorWindow.rootVisualElement.style.borderTopColor = BorderColor;
             EditorWindow.rootVisualElement.style.borderRightColor = BorderColor;
             EditorWindow.rootVisualElement.style.borderBottomColor = BorderColor;
@@ -42,19 +61,42 @@ namespace Bewildered.Editor
             EditorWindow.rootVisualElement.style.borderRightWidth = 1;
             EditorWindow.rootVisualElement.style.borderBottomWidth = 1;
             EditorWindow.rootVisualElement.style.borderLeftWidth = 1;
-            EditorWindow.ShowAsDropDown(GUIUtility.GUIToScreenRect(activeRect), GetWindowSize());
         }
 
-        public void ShowDebugable(Rect activeRect)
+        protected void GetOrCreatePopupWindow()
+        {
+            EditorWindow window = GetOpenPopupWindow();
+            if (window == null)
+                CreateNewPopupWindow();
+            else
+            {
+                EditorWindow = window;
+                EditorWindow.rootVisualElement.RemoveAt(0);
+                VisualElement content = CreateContentElement();
+                content.name = GetType().Name;
+                EditorWindow.rootVisualElement.Add(content);
+            }
+        }
+
+        protected EditorWindow GetOpenPopupWindow()
+        {
+            var openPopupsWindows = Resources.FindObjectsOfTypeAll<AdvancedPopupWindowContainer>();
+
+            foreach (var window in openPopupsWindows)
+            {
+                if (window.rootVisualElement.ElementAt(0).name == GetType().Name)
+                    return window;
+            }
+
+            return null;
+        }
+
+        protected void CreateNewPopupWindow()
         {
             EditorWindow = ScriptableObject.CreateInstance<AdvancedPopupWindowContainer>();
-            EditorWindow.rootVisualElement.Add(CreateContentElement());
-            EditorWindow.Show();
-        }
-
-        public virtual Vector2 GetWindowSize()
-        {
-            return new Vector2(200.0f, 200.0f);
+            VisualElement content = CreateContentElement();
+            content.name = GetType().Name;
+            EditorWindow.rootVisualElement.Add(content);
         }
     }
 }

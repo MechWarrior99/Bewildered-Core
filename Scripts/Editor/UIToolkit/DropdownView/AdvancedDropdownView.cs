@@ -6,7 +6,7 @@ using UnityEngine.UIElements;
 using UnityEditor;
 using UnityEditor.UIElements;
 
-namespace Bewildered.Core.Editor
+namespace Bewildered.Editor
 {
     /// <summary>
     /// Inherit from this class to implement your own drop-down control.

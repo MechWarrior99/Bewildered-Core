@@ -5,7 +5,7 @@ namespace Bewildered
 {
     public enum Rounding { ToEven, AwayFromZero }
 
-    public struct MathUtility
+    public struct MathfUtility
     {
         /// <summary>
         /// Returns <paramref name="f"/> rounded to the nearest <paramref name="n"/>
@@ -57,6 +57,8 @@ namespace Bewildered
         {
             return (float)Math.Round((float)f, digits, rounding == Rounding.AwayFromZero ? MidpointRounding.AwayFromZero : MidpointRounding.ToEven);
         }
+
+        // https://stackoverflow.com/questions/929103/convert-a-number-range-to-another-range-maintaining-ratio
 
         public static float Remap(float from, float fromMax, float toMax)
         {

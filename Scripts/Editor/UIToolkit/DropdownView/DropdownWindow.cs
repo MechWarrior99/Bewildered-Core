@@ -1,6 +1,6 @@
 ﻿using UnityEditor;
 
-namespace Bewildered.Core.Editor
+namespace Bewildered.Editor
 {
     /// <summary>
     /// An empty <see cref="EditorWindow"/> used for the <see cref="AdvancedDropdownView"/>.

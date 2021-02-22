@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Bewildered.Core.Editor
+namespace Bewildered.Editor
 {
     [Serializable]
     public class DropdownItem

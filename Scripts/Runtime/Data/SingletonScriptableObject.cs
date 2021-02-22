@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace Bewildered
 {
@@ -8,16 +9,13 @@ namespace Bewildered
     /// <typeparam name="T"></typeparam>
     public abstract class SingletonScriptableObject<T> : ScriptableObject where T : ScriptableObject
     {
-        private static T _instance;
+        private static Lazy<T> _instance = new Lazy<T>(() => Resources.Load<T>(typeof(T).Name));
 
         public static T Instance
         {
             get
             {
-                if (_instance == null)
-                    _instance = Resources.Load<T>(typeof(T).Name);
-
-                return _instance;
+                return _instance.Value;
             }
         }
 

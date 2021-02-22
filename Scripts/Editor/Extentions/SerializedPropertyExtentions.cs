@@ -72,11 +72,59 @@ namespace Bewildered.Editor
         }
 
         /// <summary>
+        /// Gets all children of `SerializedProperty` at 1 level depth.
+        /// </summary>
+        /// <param name="serializedProperty">Parent `SerializedProperty`.</param>
+        /// <returns>Collection of `SerializedProperty` children.</returns>
+        // https://forum.unity.com/threads/loop-through-serializedproperty-children.435119/#post-5333913
+        public static IEnumerable<SerializedProperty> GetChildren(this SerializedProperty property)
+        {
+            SerializedProperty currentProperty = property.Copy();
+            SerializedProperty nextSiblingProperty = property.Copy();
+            nextSiblingProperty.Next(false);
+
+            if (currentProperty.Next(true))
+            {
+                do
+                {
+                    if (SerializedProperty.EqualContents(currentProperty, nextSiblingProperty))
+                        break;
+
+                    yield return currentProperty; // Possibly need to use .Copy() to work with Linq ToArray().
+                }
+                while (currentProperty.Next(false));
+            }
+        }
+
+        // Works except for when the mangedReferenceValue is null, then it returns null.
+        //public static string GetValueType(this SerializedProperty property)
+        //{
+        //    string unityTypeString = "PPtr";
+        //    string managedReferenceString = "managedReference";
+        //    string typeString = property.type;
+
+        //    Match unityTypeMatch = Regex.Match(typeString, @"\$(.+)>");
+        //    Match managedRefMatch = Regex.Match(typeString, @"<(.+)>");
+
+        //    if (typeString.Contains(unityTypeString))
+        //        typeString = unityTypeMatch.Success ? unityTypeMatch.Groups[1].Value : managedRefMatch.Groups[1].Value;
+        //    else if (typeString.Contains(managedReferenceString))
+        //        typeString = managedRefMatch.Groups[1].Value;
+
+        //    if (string.IsNullOrEmpty(typeString))
+        //    {
+        //        return null;
+        //    }
+
+        //    return property.type;
+        //}
+
+        /// <summary>
         /// Doesn't work when in a nested type. It will return the parent type instead.
         /// </summary>
         /// <param name="property"></param>
         /// <returns></returns>
-        public static System.Type GetPropertyType(this SerializedProperty property)
+        public static Type GetPropertyType(this SerializedProperty property)
         {
             object obj = property.serializedObject.targetObject;
             string path = property.propertyPath.Replace(".Array.data", "");
@@ -114,7 +162,7 @@ namespace Bewildered.Editor
         }
 
 
-        public static T GetValue<T>(this SerializedProperty property) where T : class
+        public static T GetValue<T>(this SerializedProperty property)
         {
             return (T)property.GetValue();
         }

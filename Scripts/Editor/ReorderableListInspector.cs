@@ -40,7 +40,6 @@ namespace Bewildered.Editor
             //else
             //    EditorGUILayout.PropertyField(property, property.isExpanded);
             ExtraEditorGUI.PropertyField(property);
-
             if (isdefaultScriptProperty)
                 GUI.enabled = cachedGUIEnabled;
         }

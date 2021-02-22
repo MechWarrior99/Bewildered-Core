@@ -13,8 +13,8 @@ namespace Bewildered
     [Serializable]
     public class UHashset<T> : ISet<T>, ICollection<T>, IEnumerable<T>, ISerializationCallbackReceiver
     {
-        private readonly HashSet<T> _hashset = new HashSet<T>();
-        [SerializeField] private List<T> _hashsetList = new List<T>();
+        protected readonly HashSet<T> _hashset = new HashSet<T>();
+        [SerializeField] protected List<T> _hashsetList = new List<T>();
         [NonSerialized] private bool _doSerializeToHashset = true;
 
         /// <summary>
