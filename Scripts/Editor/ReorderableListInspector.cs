@@ -35,11 +35,11 @@ namespace Bewildered.Editor
             if (isdefaultScriptProperty)
                 GUI.enabled = false;
 
-            //if (property.isArray && property.propertyType != SerializedPropertyType.String)
-            //    GetReorderableList(property).DrawLayout();
-            //else
-            //    EditorGUILayout.PropertyField(property, property.isExpanded);
-            ExtraEditorGUI.PropertyField(property);
+            if (property.isArray && property.propertyType != SerializedPropertyType.String)
+                GetReorderableList(property).DrawLayout();
+            else
+                EditorGUILayout.PropertyField(property, property.isExpanded);
+
             if (isdefaultScriptProperty)
                 GUI.enabled = cachedGUIEnabled;
         }
