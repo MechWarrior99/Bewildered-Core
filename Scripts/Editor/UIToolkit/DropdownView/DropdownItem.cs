@@ -1,17 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace Bewildered.Editor
 {
     [Serializable]
-    public class DropdownItem
+    public class DropdownItem : IComparable<DropdownItem>
     {
         private List<DropdownItem> _children = new List<DropdownItem>();
 
-        public List<DropdownItem> Children
+        public ReadOnlyCollection<DropdownItem> Children
         {
-            get { return _children; }
-            set { _children = value; }
+            get { return _children.AsReadOnly(); }
         }
 
         public bool HasChildren
@@ -35,15 +35,45 @@ namespace Bewildered.Editor
             private set; 
         }
 
+        public DropdownItem this[int index]
+        {
+            get { return _children[index]; }
+            set { _children[index] = value; }
+        }
+
         public DropdownItem(string name)
         {
             Name = name;
+        }
+
+        public void InserChild(int index, DropdownItem child)
+        {
+            child.Parent = this;
+            _children.Insert(index, child);
         }
 
         public void AddChild(DropdownItem child)
         {
             child.Parent = this;
             _children.Add(child);
+        }
+
+        public void SortTree()
+        {
+            _children.Sort();
+            foreach (var child in _children)
+            {
+                child.SortTree();
+            }
+        }
+
+        public void SortTree(Comparison<DropdownItem> comparison)
+        {
+            _children.Sort(comparison);
+            foreach (var child in _children)
+            {
+                child.SortTree(comparison);
+            }
         }
 
         /// <summary>
@@ -55,7 +85,7 @@ namespace Bewildered.Editor
             _children.AddRange(items);
         }
 
-        public List<DropdownItem> GetAllChildren()
+        public IEnumerable<DropdownItem> GetAllChildren()
         {
             List<DropdownItem> children = new List<DropdownItem>(_children);
 
@@ -65,6 +95,12 @@ namespace Bewildered.Editor
             }
 
             return children;
+        }
+
+        public int CompareTo(DropdownItem other)
+        {
+            int childrenDiff = other.HasChildren.CompareTo(HasChildren);
+            return childrenDiff != 0 ? childrenDiff : string.CompareOrdinal(Name, other.Name);
         }
     } 
 }
