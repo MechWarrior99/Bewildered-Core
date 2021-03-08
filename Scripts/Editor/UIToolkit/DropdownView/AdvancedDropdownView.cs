@@ -14,6 +14,10 @@ namespace Bewildered.Editor
     /// <remarks>A dropdown menu like the <see cref="UnityEditor.IMGUI.Controls.AdvancedDropdown"/>, but using <see cref="VisualElement"/>s and more customization options.</remarks>
     public abstract class AdvancedDropdownView
     {
+        public static readonly string UssClassName = "bewildered-advanced-dropdown";
+        public static readonly string ItemUssClassName = UssClassName + "__item";
+        public static readonly string ItemIconUssClassName = ItemUssClassName + "-icon";
+
         static class Styles
         {
             public static GUIContent rightArrowContent;
@@ -52,22 +56,19 @@ namespace Bewildered.Editor
         /// </summary>
         public event Action<DropdownItem> OnItemSelected;
 
-        public static string dropdownItemUssClassName = "bewildered-dropdown-item";
 
         public AdvancedDropdownView()
         {
             _rootVisualElement = new VisualElement();
-            _rootVisualElement.name = "base";
+            _rootVisualElement.name = UssClassName;
+            _rootVisualElement.AddToClassList(UssClassName);
             _rootVisualElement.styleSheets.Add(Resources.Load<StyleSheet>("Bewildered/AdvancedDropdown"));
 
             Color borderColor = new Color(0.1f, 0.1f, 0.1f, 1.0f);
             _rootVisualElement.style.borderTopColor = borderColor;
             _rootVisualElement.style.borderRightColor = borderColor;
             _rootVisualElement.style.borderBottomColor = borderColor;
-            _rootVisualElement.style.borderLeftColor = borderColor;
-            
-            RootItem = BuildRoot();
-            ParentItem = RootItem;
+            _rootVisualElement.style.borderLeftColor = borderColor;     
 
             // Search field.
             SearchField = new ToolbarSearchField();
@@ -77,7 +78,6 @@ namespace Bewildered.Editor
             // Button for going back to the previus parent and for displaying the name of the current parent.
             _headerButton = new Button(OnHeaderSelected);
             _headerButton.name = "header";
-            _headerButton.text = RootItem.Name;
 
             Image arrowImage = VisualElementUtility.CreateIconImage(Styles.leftArrowContent);
             arrowImage.name = "arrow";
@@ -89,8 +89,7 @@ namespace Bewildered.Editor
             _list = new EnhancedListView();
             _list.makeItem = MakeCompleteItem;
             _list.bindItem = BindCompleteItem;
-            _list.itemsSource = RootItem.Children;
-            _list.itemHeight = 21;
+            _list.itemHeight = 23;
             _list.onSelectionChanged += selectedItems => 
             {
                 if (selectedItems.Count > 0)
@@ -99,6 +98,8 @@ namespace Bewildered.Editor
             _list.style.flexGrow = 1.0f;
             _list.Refresh();
             _rootVisualElement.Add(_list);
+
+            Reload();
         }
 
         private void OnHeaderSelected()
@@ -139,7 +140,7 @@ namespace Bewildered.Editor
         private VisualElement MakeCompleteItem()
         {
             VisualElement item = MakeItem();
-            item.AddToClassList(dropdownItemUssClassName);
+            item.AddToClassList(ItemUssClassName);
 
             return item;
         }
@@ -154,7 +155,8 @@ namespace Bewildered.Editor
             item.style.flexDirection = FlexDirection.Row;
 
             Image icon = new Image();
-            icon.name = "icon";
+            icon.name = ItemIconUssClassName;
+            icon.AddToClassList(ItemIconUssClassName);
             icon.style.width = 16.0f;
             icon.style.height = 16.0f;
             item.Add(icon);
@@ -179,15 +181,15 @@ namespace Bewildered.Editor
         {
             Image arrowImage = element.Q<Image>("arrow");
             if (arrowImage != null)
-                arrowImage.style.display = ParentItem.Children[index].HasChildren ? DisplayStyle.Flex : DisplayStyle.None;
+                arrowImage.style.display = ParentItem[index].HasChildren ? DisplayStyle.Flex : DisplayStyle.None;
 
-            BindItem(element, index);
+            BindItem(element, ParentItem[index], index);
         }
 
-        protected virtual void BindItem(VisualElement element, int index)
+        protected virtual void BindItem(VisualElement element, DropdownItem item, int index)
         {
             Label label = element.Q<Label>();
-            label.text = ParentItem.Children[index].Name;
+            label.text = item.Name;
         }
 
         protected virtual void ItemSelected(DropdownItem item)
@@ -223,7 +225,7 @@ namespace Bewildered.Editor
 
         protected virtual DropdownItem OnSearch(string searchFilter)
         {
-            List<DropdownItem> items = RootItem.GetAllChildren();
+            List<DropdownItem> items = new List<DropdownItem>(RootItem.GetAllChildren());
             DropdownItem searchParent = new DropdownItem("Search");
 
             for (int i = items.Count - 1; i >= 0; i--)
@@ -249,6 +251,7 @@ namespace Bewildered.Editor
 
             _list.itemsSource = ParentItem.Children;
             _list.Refresh();
+            _list.Q<ScrollView>().scrollOffset = Vector2.zero;
             _list.ClearSelection();
         }
     }
