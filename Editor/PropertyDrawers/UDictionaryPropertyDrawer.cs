@@ -72,7 +72,7 @@ namespace Bewildered.Editor
 
             float height = EditorGUIUtility.singleLineHeight;
             if (_reorderableList.serializedProperty.isExpanded)
-                height += _reorderableList.GetHeight()  + EditorGUIUtility.singleLineHeight;
+                height += _reorderableList.GetHeight()  + EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
             return height;
         }
 
