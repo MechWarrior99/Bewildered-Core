@@ -1,0 +1,18 @@
+{
+    "name": "Bewildered.Core.Editor",
+    "rootNamespace": "Bewildered.Editor",
+    "references": [
+        "GUID:0e4142ec1b13c6f4e81a0fd2a2c76afd"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

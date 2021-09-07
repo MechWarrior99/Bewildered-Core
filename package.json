@@ -1,0 +1,15 @@
+{
+  "name": "com.bewildered.core",
+  "version": "1.0.0",
+  "displayName": "Bewildered Core",
+  "description": "Common use data types, tools, and utilities.",
+  "unity": "2020.3",
+  "keywords": [
+    "asset"
+  ],
+  "author": {
+    "name": "Bewildered",
+    "email": "contact@bewilderedstudios.com",
+    "url": "https://www.bewilderedstudios.com"
+  }
+}
