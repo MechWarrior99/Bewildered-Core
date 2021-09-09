@@ -1,8 +1,11 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 namespace Bewildered
 {
+    // Much is copied from the AccessTools class from the Harmony library: https://github.com/pardeike/Harmony/blob/master/Harmony/Tools/AccessTools.cs
     /// <summary>
     /// A helper class for reflection related functions.
     /// </summary>
@@ -19,6 +22,44 @@ namespace Bewildered
             | BindingFlags.SetField
             | BindingFlags.GetProperty
             | BindingFlags.SetProperty;
+
+        /// <summary>
+        /// Enumerates all assemblies in the current app domain.
+        /// </summary>
+        /// <returns>An enumeration of <see cref="Assembly"/>.</returns>
+        public static IEnumerable<Assembly> AllAssemblies()
+        {
+            // We want to ignore the visual studio assemblies.
+            return AppDomain.CurrentDomain.GetAssemblies().Where(a => a.FullName.StartsWith("Microsoft.VisualStudio") is false);
+        }
+
+        /// <summary>
+        /// Enumerates all successfully loaded types in the current app domain.
+        /// </summary>
+        /// <returns>An enumeration of all <see cref="Type"/> in all assemblies.</returns>
+        public static IEnumerable<Type> AllTypes()
+        {
+            return AllAssemblies().SelectMany(a => a.GetTypes());
+        }
+
+        /// <summary>
+        /// Returns a <see cref="Type"/> whose name matches the specified name. 
+        /// Prefers if the specified name includes the namespace, if not it match the first type with the same name. 
+        /// </summary>
+        /// <param name="typeName">The name of the <see cref="Type"/> to get.</param>
+        /// <returns>A <see cref="Type"/> with a matching name to <paramref name="typeName"/>; If one is not found, <c>null</c>.</returns>
+        public static Type TypeByName(string typeName)
+        {
+            Type type = Type.GetType(typeName);
+
+            if (type == null && typeName.Contains('.'))
+                type = AllTypes().FirstOrDefault(t => t.FullName == typeName);
+            
+            if (type == null)
+                type = AllTypes().FirstOrDefault(t => t.Name == typeName);
+
+            return type;
+        }
 
         /// <summary>
         /// Gets the reflection information for a field.
