@@ -4,7 +4,7 @@
  ## Runtime
  ### UDictionary
 A serializable Dictionary with reordering elements, supports prefabs, and allows for lists as keys and values.
-It also provides indication of which elements have duplicate keys and will not be added to the Dictionary. Duplicates are removed on domain reload (enter playmode, or recompile scripts).
+It also provides indication of which elements have duplicate keys and will not be added to the Dictionary. Duplicates are removed on domain reload (enter playmode, or recompile scripts).  
 UDictionaries are as easy to use like Lists, no bolierplate! 
 ```csharp
 [serializeField] private UDictionary<string, float> _example = new UDictionary<string, float>();
@@ -12,8 +12,8 @@ UDictionaries are as easy to use like Lists, no bolierplate!
  ![image](https://user-images.githubusercontent.com/8076495/132381819-94d52bcc-fee1-493f-8f18-4dec2a778b31.png)
  ### UHashSet
  A serializable HashSet with reordering elements, and support for prefabs.
- It also provides indication of which elements are duplicates and will not be saved to the HashSet. Duplicates are removed on domain reload (enter playmode, or recompile scripts).
-UHashSet are as easy to use like Lists, no bolierplate! 
+ It also provides indication of which elements are duplicates and will not be saved to the HashSet. Duplicates are removed on domain reload (enter playmode, or recompile scripts).  
+UHashSets are as easy to use like Lists, no bolierplate! 
 ```csharp
 [serializeField] private UHashset<string> _example = new UHashset<string>();
 ```
