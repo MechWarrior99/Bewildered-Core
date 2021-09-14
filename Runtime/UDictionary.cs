@@ -42,7 +42,7 @@ namespace Bewildered
         void ISerializationCallbackReceiver.OnBeforeSerialize()
         {
 #if UNITY_EDITOR
-            // _saveCollisions is set to false when the domain reloads. This will cause all of the serialized pairs with duplicate keys
+            // _saveDuplicates is set to false when the domain reloads. This will cause all of the serialized pairs with duplicate keys
             // to be removed, since we just call Clear() on the serialized pairs.
             // It would be nice if there was a way to check when the property drawer was no longer being used, and clear the duplicates then,
             // but that does not seem possible at this time.
@@ -143,10 +143,10 @@ namespace Bewildered
         }
 
 #if UNITY_EDITOR
-        private void SetPairDuplicatedState(int index, bool collides)
+        private void SetPairDuplicatedState(int index, bool isDuplicateKey)
         {
             var pair = _serializedPairs[index];
-            pair.isDuplicateKey = collides;
+            pair.isDuplicateKey = isDuplicateKey;
             _serializedPairs[index] = pair;
         }
 #endif
