@@ -88,6 +88,7 @@ namespace Bewildered.Editor
             if (serializedValueProperty.FindPropertyRelative("isDuplicate").boolValue)
                 GUI.color = new Color(0.9f, 0.4f, 0.4f);
 
+            rect.height = EditorGUI.GetPropertyHeight(valueProperty, valueProperty.isExpanded);
             EditorGUI.BeginProperty(rect, GUIContent.none, valueProperty);
             rect.xMin += 12;
             EditorGUI.BeginChangeCheck();
