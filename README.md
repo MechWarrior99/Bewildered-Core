@@ -19,6 +19,44 @@ UHashSets are as easy to use like Lists, no bolierplate!
 ```
 ![image](https://user-images.githubusercontent.com/8076495/133187043-4557e207-b244-4fcf-a142-73358e7eca37.png)
 
+### TimeValue
+Represents a point in time or a duration, provides a more user freindly way to set time than a float.
+```csharp
+TimeValue duration = new TimeValue()
+{
+    Minutes = 2,
+    Seconds = 35
+};
+```
+vs
+```csharp
+float duration = 155.0f;
+```
+Usage is simple as it is in effectively a wrapper around a float,
+```csharp
+private TimeValue _duration = new TimeValue(2, 35);
+private float effectActiveFor = 0
+
+private void Update()
+{
+    effectActiveFor += Time.deltaTime;
+    
+    // You can use the implicit conversion.
+    if (effectActiveFor < duration)
+    {
+        // Do something...
+    }
+    
+    // You can also use the time field directly.
+    if (effectActiveFor > duration.time)
+    {
+       // Do something..
+    }
+}
+```
+It is fully integrated in to the editor with a clean property drawer.
+![image](https://user-images.githubusercontent.com/8076495/137603646-9e0d43e7-a882-4d85-95c7-b79e89047676.png)
+
 
 ## Editor
 ### SerializedPropertyExtensions
