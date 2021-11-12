@@ -150,6 +150,9 @@ namespace Bewildered.Editor
             EditorGUIUtility.labelWidth = Mathf.Max(100, valueRect.width * 0.4f);
             valueRect.height = EditorGUI.GetPropertyHeight(valueProperty, valueProperty.isExpanded);
             EditorGUI.PropertyField(valueRect, valueProperty, GUIContent.none, valueProperty.isExpanded);
+            
+            // Reset the label to it's default value.
+            EditorGUIUtility.labelWidth = 0;
         }
 
         private Rect SplitRect(Rect rect, bool isKey)
