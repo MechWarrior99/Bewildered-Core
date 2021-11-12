@@ -20,7 +20,7 @@ namespace Bewildered.Editor
         private bool _isSavingDuplicates = false;
 
         private bool _isKeySerializable = false;        // Unity can serialize this type
-        private bool _isKeyEquatable = false;           // The type (or some parent) implements Equals and GetHashCode
+        private bool _isKeyEquatable = false;           // The type implements Equals and GetHashCode
         private bool _isKeyUnityObjectDerived = false;  // The type is derived from UnityEngine.Object
         private bool _isValueSerializable = false;      // Unity can serialize this type
 
