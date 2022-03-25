@@ -132,6 +132,7 @@ namespace Bewildered.Editor
                 GUI.color = new Color(0.9f, 0.4f, 0.4f);
 
             Rect keyRect = SplitRect(rect, true);
+            EditorGUIUtility.labelWidth = keyRect.width * 0.6f;
             keyRect.height = EditorGUI.GetPropertyHeight(keyProperty, keyProperty.isExpanded);
             EditorGUI.BeginProperty(keyRect, GUIContent.none, keyProperty);
             keyRect.xMin += 12;
@@ -146,8 +147,12 @@ namespace Bewildered.Editor
             // Draws the value field.
             Rect valueRect = SplitRect(rect, false);
             valueRect.xMin += 12;
+            EditorGUIUtility.labelWidth = Mathf.Max(100, valueRect.width * 0.4f);
             valueRect.height = EditorGUI.GetPropertyHeight(valueProperty, valueProperty.isExpanded);
             EditorGUI.PropertyField(valueRect, valueProperty, GUIContent.none, valueProperty.isExpanded);
+
+            // Reset the label to it's default value.
+            EditorGUIUtility.labelWidth = 0;
         }
 
         private Rect SplitRect(Rect rect, bool isKey)
