@@ -354,9 +354,9 @@ namespace Bewildered
                 }
             }
 #else
-            foreach (var serializedItem in _serializedItems)
+            foreach (var serializedValue in _serializedValues)
             {
-                Add(serializedItem.value);
+                Add(serializedValue.value);
             }
 #endif
         }
