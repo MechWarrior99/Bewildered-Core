@@ -24,17 +24,14 @@ namespace Bewildered
         private struct SerializableValue
         {
             public T value;
-#if UNITY_EDITOR
             public bool isDuplicate;
             public int index;
-#endif
+
             public SerializableValue(T value)
             {
                 this.value = value;
-#if UNITY_EDITOR
                 isDuplicate = false;
                 index = -1;
-#endif
             }
         }
 
