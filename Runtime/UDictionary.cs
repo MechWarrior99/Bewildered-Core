@@ -17,18 +17,15 @@ namespace Bewildered
         {
             public TKey key;
             public TValue value;
-#if UNITY_EDITOR
             public bool isDuplicateKey;
             public int index;
-#endif
+
             public SerializableKeyValuePair(KeyValuePair<TKey, TValue> pair)
             {
                 key = pair.Key;
                 value = pair.Value;
-#if UNITY_EDITOR
                 isDuplicateKey = false;
                 index = -1;
-#endif
             }
         }
 
