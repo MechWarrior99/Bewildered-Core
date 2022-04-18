@@ -1,6 +1,6 @@
 {
   "name": "com.bewildered.core",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "displayName": "Bewildered Core",
   "description": "Common use data types, tools, and utilities.",
   "unity": "2020.3",
