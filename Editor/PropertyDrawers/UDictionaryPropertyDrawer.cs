@@ -1,3 +1,4 @@
+using System;
 using System.Reflection;
 using UnityEngine;
 using UnityEditor;
@@ -17,6 +18,12 @@ namespace Bewildered.Editor
 
         private FieldInfo _saveDuplicatesInfo;
         private bool _isSavingDuplicates = false;
+
+        private bool _isKeySerializable = false;        // Unity can serialize this type
+        private bool _isKeyEquatable = false;           // The type implements Equals and GetHashCode
+        private bool _isKeyUnityObjectDerived = false;  // The type is derived from UnityEngine.Object
+        private bool _isValueSerializable = false;      // Unity can serialize this type
+
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
@@ -76,6 +83,8 @@ namespace Bewildered.Editor
 
         private void Init(SerializedProperty property)
         {
+            EvaluateKeyAndValueTypes(property);
+
             _property = property;
             
             _pairsProperty = _property.FindPropertyRelative("_serializedPairs");
@@ -85,11 +94,46 @@ namespace Bewildered.Editor
             _reorderableList.elementHeightCallback += GetElementHeight;
             _reorderableList.onAddCallback += rl =>
             {
-                _pairsProperty.arraySize++;
-                _pairsProperty.GetLastArrayElement().FindPropertyRelative("index").intValue = _pairsProperty.arraySize - 1;
-                EnssureSaveDuplicates();
+                if (CheckKeyAndValueTypesAreValid())
+                {
+                    _pairsProperty.arraySize++;
+                    _pairsProperty.GetLastArrayElement().FindPropertyRelative("index").intValue = _pairsProperty.arraySize - 1;
+                    EnssureSaveDuplicates();
+                }
             };
-            _reorderableList.drawNoneElementCallback += rect => GUI.Label(rect, "Dictionary is Empty");
+            _reorderableList.drawNoneElementCallback += rect => 
+            {
+                if(_isKeyUnityObjectDerived)
+                {
+                    GUI.Label(rect, new GUIContent(
+                        "The Key type cannot be a child of UnityEngine.Object!",
+                        "The Key cannot be serialized as a reference."));
+                }
+                else if (!_isKeySerializable)
+                {
+                    GUI.Label(rect, new GUIContent(
+                        "The Key type is not Serializable!",
+                        "Add the [Serializable] attribute to the type definition."));
+                }
+                else if (!_isValueSerializable)
+                {
+                    GUI.Label(rect, new GUIContent(
+                        "The Value type is not Serializable!",
+                        "Add the [Serializable] attribute to the type definition."));
+                }
+                else if(!_isKeyEquatable)
+                {
+                    GUI.Label(rect, new GUIContent(
+                        "The Key type is not Equatable!", 
+                        "Make the Key a struct or override the functions Equals and GetHashCode"));
+                }
+                else
+                {
+                    GUI.Label(rect, new GUIContent(
+                        "Dictionary is Empty.",
+                        "Use the + button to add values."));
+                }
+            };
 
             _saveDuplicatesInfo = AccessUtility.Field(fieldInfo.FieldType, "_saveDuplicates");
         }
@@ -97,6 +141,75 @@ namespace Bewildered.Editor
         public override bool CanCacheInspectorGUI(SerializedProperty property)
         {
             return false;
+        }
+
+        private bool CheckKeyAndValueTypesAreValid()
+        {
+            return _isKeySerializable && _isKeyEquatable && !_isKeyUnityObjectDerived && _isValueSerializable;
+        }
+
+        private void EvaluateKeyAndValueTypes(SerializedProperty property)
+        {
+            _isKeySerializable = false;
+            _isKeyEquatable = false;
+            _isKeyUnityObjectDerived = false;
+            _isValueSerializable = false;
+
+            // TODO: Is there a better way to check if key and value are serializable without instantianting an object?
+            _property = property;
+            _pairsProperty = _property.FindPropertyRelative("_serializedPairs");
+
+            _pairsProperty.arraySize++;
+            var temporaryObj = _pairsProperty.GetLastArrayElement();
+            SerializedProperty keyProperty = temporaryObj.FindPropertyRelative("key");
+            SerializedProperty valueProperty = temporaryObj.FindPropertyRelative("value");
+
+            // If the properties are not null, it means Unity can serialize its' types
+            _isKeySerializable = keyProperty != null;
+            _isValueSerializable = valueProperty != null;
+
+            if (!_isKeySerializable)
+            {
+                _pairsProperty.arraySize--;
+                return;
+            }
+
+            Type keyType = keyProperty.GetPropertyFieldType();
+            _pairsProperty.arraySize--;
+
+            // If it's a primitce type, an enum or a struct type, it is Equatable
+            if (keyType.IsValueType)
+            {
+                _isKeyEquatable = true;
+                return;
+            }
+
+            // We don't accept class types that Unity serializes as reference and not as value (i.e. the key can be null)
+            if (keyType.IsSubclassOf(typeof(UnityEngine.Object)) || keyType == typeof(UnityEngine.Object))
+            {
+                _isKeyUnityObjectDerived = true;
+                return;
+            }
+
+            // We don't accept types that are not defined as Equatable (i.e. overriding Equals and GetHashCode)
+            MethodInfo infoEquals = keyType.GetMethod("Equals",
+                BindingFlags.Public | BindingFlags.Instance,
+                null,
+                CallingConventions.Any,
+                new Type[] { typeof(object) },
+                null);
+
+            MethodInfo infoGetHashCode = keyType.GetMethod("GetHashCode",
+                BindingFlags.Public | BindingFlags.Instance,
+                null,
+                CallingConventions.Any,
+                Type.EmptyTypes,
+                null);
+
+            bool hasEquals = infoEquals.DeclaringType == keyType;
+            bool hasGetHashCode = infoGetHashCode.DeclaringType == keyType;
+
+            _isKeyEquatable = hasEquals && hasGetHashCode;
         }
 
 
